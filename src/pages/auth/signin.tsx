@@ -68,6 +68,7 @@ const SignIn = () => {
         throw new ValidateError("Login Failed!");
       }
       dispatch({ type: "authToken", payload: res.token });
+      dispatch({ type: "updated", payload: !state.updated });
       setStore(res.token)
       showToast("You have successfully logged in.", "success")
       navigate("/")

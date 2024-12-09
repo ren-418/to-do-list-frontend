@@ -6,7 +6,18 @@ interface ReducerObject {
 interface InitStateObject {
   authToken: string;
   loading: boolean;
-  userData: { email: string; fullName: string };
+  updated:boolean;
+  userData: { email: string; username: string ,taskList:TaskItem[]};
+}
+
+interface TaskItem {
+    id:string;
+    user_id:string;
+    title:string,
+    description:string,
+    status:boolean,
+    priority:string,
+    due_date:number | null
 }
 
 type GlobalContextType = [
@@ -17,3 +28,4 @@ type GlobalContextType = [
     setStore: (authToken: string) => void;
   },
 ];
+

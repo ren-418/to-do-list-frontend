@@ -8,8 +8,9 @@ import { Input, Select } from '../../components/input';
 import Layout from '../../components/layout/layout';
 import Loader from '../../components/loader';
 import DatePicker from '../../components/date-picker';
-import Icon from '../../components/icon';
-import { apiNotification } from '../../services';
+// import Icon from '../../components/icon';
+// import { apiNotification } from '../../services';
+import { showToast } from '../../context/helper';
 
 const PRIORITY = ["Low", "Middle", "High"]
 
@@ -18,28 +19,28 @@ const NewTodo = () => {
     const [state, { dispatch }]: GlobalContextType = useGlobalContext()
     const [status, setStatus] = React.useState({
         title: "",
-        content: "",
+        description: "",
         priority: "LOW",
-        endDate: 0,
-        tags: ["General"],
-        tag: ""
+        dueDate: null
     } as {
         title: string
-        content: string
+        description: string
         priority: string
-        endDate: number,
-        tags: string[]
-        tag: string
+        dueDate: number | null,
+    
     })
 
-    const [isAddTag, setAddTag] = React.useState(false)
 
     const onSend = async () => {
-
         dispatch({ type: "loading", payload: true })
-        const res = await restApi.postRequest("create-task", status)
-
-        dispatch({ type: "loading", payload: false });
+        const res = await restApi.postRequest("todo/create", status);
+        if (!!res.item) {
+            showToast("Successfully added one task ", "success")
+            dispatch({ type: "loading", payload: false });    
+            dispatch({ type: "updated", payload: !state.updated });
+            navigate("/")
+        }
+        
     }
 
     const onInput = (e: any, type: string) => {
@@ -49,26 +50,26 @@ const NewTodo = () => {
 
     const onChangeDate = (value: Date) => {
         const timestamp = value.getTime()
-        setStatus({ ...status, endDate: timestamp })
+        setStatus({ ...status, dueDate: timestamp })
     }
 
     const onChangePriority = (v: string) => {
         setStatus({ ...status, priority: v })
     }
 
-    const onAddTag = async () => {
-        try {
-            const res = await restApi.postRequest("add-tag", { tag: status.tag })
-            if (res.message === "success") {
-                setStatus({ ...status, tags: res.data })
-            }
-        } catch (error) {
-            apiNotification(error)
-        }
-    }
+    // const onSend = async () => {
+    //     try {
+    //         const res = await restApi.postRequest("add-tag", { tag: status.tag })
+    //         if (res.message === "success") {
+    //             setStatus({ ...status, tags: res.data })
+    //         }
+    //     } catch (error) {
+    //         apiNotification(error)
+    //     }
+    // }
 
-    const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'brown', 'cyan', 'lime', 'magenta', 'teal', 'indigo', 'gold', 'silver', 'navy', 'olive', 'coral', 'violet', 'aqua'];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    // const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'brown', 'cyan', 'lime', 'magenta', 'teal', 'indigo', 'gold', 'silver', 'navy', 'olive', 'coral', 'violet', 'aqua'];
+    // const randomColor = colors[Math.floor(Math.random() * colors.length)];
     return (
         <Layout>
             <div className="mx-auto max-w-270">
@@ -91,8 +92,8 @@ const NewTodo = () => {
                                     Description
                                 </label>
                                 <textarea
-                                    value={status.content}
-                                    onChange={e => setStatus({ ...status, content: e.target.value })}
+                                    value={status.description}
+                                    onChange={e => setStatus({ ...status, description: e.target.value })}
                                     rows={6}
                                     placeholder="Enter task description"
                                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -112,7 +113,7 @@ const NewTodo = () => {
                                     <Select value={status.priority} onChange={onChangePriority} data={PRIORITY} />
                                 </div>
                             </div>
-                            <div>
+                            {/* <div>
                                 <label className="mb-3 block text-black dark:text-white">
                                     Tags
                                 </label>
@@ -120,24 +121,24 @@ const NewTodo = () => {
                                     <div key={k} className={`flex gap-2 w-24 items-center justify-center text-[${randomColor}] bg-[${randomColor}] bg-opacity-30 p-2 rounded-full text-sm`}>{i}</div>
                                 ))}
                                 <button onClick={() => setAddTag(!isAddTag)} className='flex gap-2 w-24 items-center justify-center text-warning bg-warning bg-opacity-30 p-2 rounded-full text-sm'><Icon icon="Plus" /> Add Tag</button>
-                            </div>
+                            </div> */}
                         </div>
 
-                        {isAddTag && (
+                        {/* {isAddTag && (
                             <div className='flex flex-row gap-2'>
                                 <Input value={status.tag} type="tag" onInput={onInput} placeholder="Enter new tag name" />
                                 <button onClick={onAddTag} className={`flex justify-center gap-3 items-center rounded border text-green-700 border-green-700 py-2 px-6 font-medium text-gray hover:bg-opacity-90 cursor-pointer`}>
                                     Add
                                 </button>
                             </div>
-                        )}
+                        )} */}
 
-                        <div className="flex justify-end gap-4.5 flex-col-reverse sm:flex-row">
+                        <div className="flex justify-end gap-4.5 p-5 flex-col-reverse sm:flex-row">
                             <Link to="/" className="flex justify-center rounded py-2 px-6 font-medium hover:shadow-1 border text-red-500 border-red-500">
                                 Cancel
                             </Link>
 
-                            <button onClick={onAddTag} disabled={state.loading ? true : false} className={`flex justify-center gap-3 items-center rounded bg-green-700 py-2 px-6 font-medium text-gray hover:bg-opacity-90 ${state.loading ? 'cursor-not-allowed' : 'cursor-pointer'} `}>
+                            <button onClick={onSend} disabled={state.loading ? true : false} className={`flex justify-center gap-3 items-center rounded bg-green-700 py-2 px-6 font-medium text-gray hover:bg-opacity-90 ${state.loading ? 'cursor-not-allowed' : 'cursor-pointer'} `}>
                                 {state.loading && <Loader />}
                                 Create Task
                             </button>

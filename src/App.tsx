@@ -9,9 +9,9 @@ import Todo from './pages/todo';
 
 function App() {
   const [state]: GlobalContextType = useGlobalContext();
-
   React.useEffect(() => {
     restApi.setAuthToken(state.authToken);
+    console.log("state authToken :::", state.authToken )
   }, [state.authToken]);
 
   return (

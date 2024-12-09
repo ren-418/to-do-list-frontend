@@ -9,16 +9,17 @@ import config from '../config/config';
 const INIT_STATE: InitStateObject = {
     loading: false,
     authToken: "",
+    updated:false,
     userData: {
         email: "",
-        fullName: "",
+        username: "",
+        taskList:[]
     }
 }
 
 // create context
 const GlobalContext = createContext<any>({});
 const reducer = (state: InitStateObject, { type, payload }: ReducerObject) => {
-    // if (type === 'authToken') setStore(payload);
     return { ...state, [type]: payload };
 }
 
@@ -29,9 +30,9 @@ function useGlobalContext() {
 
 // setAuthToken to localstorage Start
 const getStore = async (): Promise<string> => {
+
     try {
         const appKey = config.APPKEY + '-config';
-
         const authToken = localStorage.getItem(`${appKey}_authToken`);
         if (typeof authToken === 'string' && !!authToken) {
             return authToken;
@@ -59,27 +60,22 @@ const GlobalContextProvider = ({ children }: any) => {
 
     useEffect(() => {
         initSessionSetting();
-    }, [])
+    }, [state.updated])
 
-    const initSessionSetting = async () => {
+ const initSessionSetting = async () => {
         try {
             const authToken = await getStore();
-            // console.log("authToken", authToken)
 
             if (!!authToken) {
                 const loginStatus = await restApi.loginStatus(authToken);
-                console.log("loginStatus", loginStatus);
-
-                if (!!loginStatus?.status) {
+                if (!!loginStatus) {
                     const userData = {
                         email: loginStatus.email,
-                        fullName: loginStatus.fullName,
+                        username: loginStatus.username,
+                        taskList:loginStatus.taskList
                     }
-
-                    // console.log("userData::", userData)
                     dispatch({ type: "authToken", payload: authToken });
                     dispatch({ type: "userData", payload: userData });
-
                     setTimeout(() => { dispatch({ type: "showLoadingPage", payload: false }) }, 1000);
                 } else {
                     throw new ValidateError("Invalid authToken!");
@@ -88,7 +84,6 @@ const GlobalContextProvider = ({ children }: any) => {
                 throw new ValidateError("Invalid authToken!");
             }
         } catch (err: any) {
-            // console.log("auth_token_invalid::", err.message);
             setTimeout(() => { dispatch({ type: "showLoadingPage", payload: false }) }, 1000);
         }
     }

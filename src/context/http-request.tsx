@@ -10,23 +10,22 @@ const restApi = {
     },
     setAuthToken: (token: string) => {
         if (token) {
-            axios.defaults.headers.common['Authorization'] = token;
+            axios.defaults.headers.common['Authorization'] =  token;
         } else {
             delete axios.defaults.headers.common['Authorization'];
         }
     },
 
-    // loginStatus: async (authToken: any) => {
-    //     const result = await axios.post("auth/loginStatus", {}, {
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         'Authorization': authToken
-    //       }
-    //     })
-    //     console.log(result)
-    
-    //     return result.data
-    //   },
+    loginStatus: async (authToken: any) => {
+        const result = await axios.post("user/getData", {}, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization':  authToken
+          }
+        })    
+        console.log("loginStatus :: result", result)
+        return result.data
+      },
 }
 
 export { restApi };
