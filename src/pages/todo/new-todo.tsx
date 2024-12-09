@@ -39,8 +39,6 @@ const NewTodo = () => {
         dispatch({ type: "loading", payload: true })
         const res = await restApi.postRequest("create-task", status)
 
-
-
         dispatch({ type: "loading", payload: false });
     }
 
@@ -103,7 +101,7 @@ const NewTodo = () => {
                             <div className='flex gap-4'>
                                 <div className='w-full'>
                                     <label className="mb-3 block text-black dark:text-white">
-                                        Due To
+                                        Due To(optional)
                                     </label>
                                     <DatePicker onChangeDate={onChangeDate} />
                                 </div>

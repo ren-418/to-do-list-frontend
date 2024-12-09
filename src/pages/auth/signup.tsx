@@ -10,7 +10,7 @@ import { apiNotification } from '../../services';
 
 interface SignUpType {
     email: string,
-    fullName: string
+    username: string
     password: string,
     confPassword: string,
     isValidName: {
@@ -36,10 +36,7 @@ const SignUp: React.FC = () => {
     const [state, { dispatch }]: GlobalContextType = useGlobalContext()
 
     const [status, setStatus] = React.useState({
-        email: "apple@gmail.com",
-        fullName: "Apple",
-        password: "1q1q!Q!Q",
-        confPassword: "1q1q!Q!Q",
+  
         isValidName: {
             msg: "",
             status: false
@@ -63,9 +60,9 @@ const SignUp: React.FC = () => {
         const value = e.target.value
 
         const validation = () => {
-            if (k === "fullName") {
+            if (k === "username") {
                 if (!v) {
-                    return { status: false, msg: 'Name is required!' }
+                    return { status: false, msg: 'Usrename is required!' }
                 }
                 return { status: true, msg: '' }
             }
@@ -84,7 +81,7 @@ const SignUp: React.FC = () => {
 
     const onSignUp = async () => {
 
-        if (status.fullName === "") {
+        if (status.username === "") {
             return setStatus({ ...status, isValidName: { status: false, msg: "Name is required!" } })
         }
         if (status.email === "") {
@@ -96,9 +93,8 @@ const SignUp: React.FC = () => {
         // if (status.isValidEmail.status && status.isMatch.status && status.isStrongPassword.status && status.isValidName.status) {
         dispatch({ type: 'loading', payload: true })
         try {
-            const res = await restApi.postRequest("signup", { fullName: status.fullName, email: status.email, password: status.password })
-            console.log(res)
-            if (res.message === "success") {
+            const res = await restApi.postRequest("auth/register", { username: status.username, email: status.email, password: status.password })
+            if (!!res.user) {
                 showToast("Registration Successful! ", "success")
                 navigate("/auth/signin")
                 dispatch({ type: 'loading', payload: false })
@@ -108,7 +104,7 @@ const SignUp: React.FC = () => {
             apiNotification(error)
         }
         dispatch({ type: 'loading', payload: false })
-        // }
+        
     }
 
     return (
@@ -127,14 +123,14 @@ const SignUp: React.FC = () => {
                         <div className="w-full p-4 sm:p-12.5 xl:p-15">
                             <div className="mb-4">
                                 <label className="mb-2.5 block font-medium text-black dark:text-white">
-                                    Name
+                                    Username
                                 </label>
                                 <div className="relative">
                                     <input
                                         type="text"
-                                        value={status.fullName}
-                                        onChange={e => onInput(e, "fullName", "isValidName")}
-                                        placeholder="Enter your full name"
+                                        value={status.username}
+                                        onChange={e => onInput(e, "username", "isValidName")}
+                                        placeholder="Enter your username"
                                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-12 pr-6 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
 
@@ -177,7 +173,6 @@ const SignUp: React.FC = () => {
                                         placeholder="Enter your password"
                                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-12 pr-6 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
-
                                     <span className="absolute left-4 top-5">
                                         <Icon icon="Password" />
                                     </span>

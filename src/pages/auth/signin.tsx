@@ -28,8 +28,6 @@ const SignIn = () => {
   const navigate = useNavigate()
   const [state, { dispatch, setStore }]: GlobalContextType = useGlobalContext()
   const [status, setStatus] = React.useState({
-    email: "apple@gmail.com",
-    password: "1q1q!Q!Q",
     isValidEmail: {
       msg: "",
       status: false
@@ -65,7 +63,7 @@ const SignIn = () => {
     dispatch({ type: 'loading', payload: true })
 
     try {
-      const res = await restApi.postRequest("login", { email: status.email, password: status.password })
+      const res = await restApi.postRequest("auth/login", { email: status.email, password: status.password })
       if (typeof res?.token !== "string") {
         throw new ValidateError("Login Failed!");
       }
@@ -97,7 +95,7 @@ const SignIn = () => {
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
               <label className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Sign In to Todo Book
+                Sign In to Todo App
               </label>
 
               <div>
@@ -118,7 +116,6 @@ const SignIn = () => {
                     {!status.isValidEmail.status ? <div className="text-red-500">{status.isValidEmail.msg}</div> : <></>}
                   </div>
                 </div>
-
                 <div className="mb-6">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Password
