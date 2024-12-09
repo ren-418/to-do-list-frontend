@@ -1,92 +1,116 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useGlobalContext } from "../../context";
 import { restApi } from "../../context/http-request";
-import { emailValidator, showToast, strongPasswordValidator } from "../../context/helper";
+import {
+  emailValidator,
+  showToast,
+  strongPasswordValidator,
+} from "../../context/helper";
+
 import Icon from "../../components/icon";
 import Loader from "../../components/loader";
 import { apiNotification } from "../../services";
-import { ValidateError } from "../../services/customError";
 
 interface LoginTypes {
-  email: string,
-  password: string,
+  email: string;
+  password: string;
   isValidEmail: {
-    msg: string,
-    status: boolean
-  },
+    msg: string;
+    status: boolean;
+  };
   isStrongPassword: {
-    msg: string,
-    status: boolean
-  },
-  isView: boolean
-  isLoading: boolean
+    msg: string;
+    status: boolean;
+  };
+  isView: boolean;
+  isLoading: boolean;
 }
 
 const SignIn = () => {
-  const navigate = useNavigate()
-  const [state, { dispatch, setStore }]: GlobalContextType = useGlobalContext()
+  const navigate = useNavigate();
+  const [state, { dispatch, setStore }]: GlobalContextType = useGlobalContext();
   const [status, setStatus] = React.useState({
     isValidEmail: {
       msg: "",
-      status: false
+      status: false,
     },
     isStrongPassword: {
       msg: "",
-      status: false
+      status: false,
     },
     isView: false,
-    isLoading: false
-  } as LoginTypes)
+    isLoading: false,
+  } as LoginTypes);
   const onInput = (e: any, k: string, v: string) => {
-    const value = e.target.value
+    const value = e.target.value;
 
     const validation = () => {
       if (k === "email") {
-        return emailValidator(value)
+        return emailValidator(value);
       }
-      if (k === 'password') {
-        return strongPasswordValidator(value)
+      if (k === "password") {
+        return strongPasswordValidator(value);
       }
-    }
-    setStatus({ ...status, [k]: value, [v]: validation() })
-  }
+    };
+    setStatus({ ...status, [k]: value, [v]: validation() });
+  };
 
   const onSignin = async () => {
     if (status.email === "") {
-      return setStatus({ ...status, isValidEmail: { status: false, msg: "Email is required!" } })
+      return setStatus({
+        ...status,
+        isValidEmail: { status: false, msg: "Email is required!" },
+      });
     }
     if (status.password === "") {
-      return setStatus({ ...status, isStrongPassword: { status: false, msg: "Password is required!" } })
+      return setStatus({
+        ...status,
+        isStrongPassword: { status: false, msg: "Password is required!" },
+      });
     }
-    dispatch({ type: 'loading', payload: true })
-
+    dispatch({ type: "loading", payload: true });
     try {
-      const res = await restApi.postRequest("auth/login", { email: status.email, password: status.password })
-      if (typeof res?.token !== "string") {
-        throw new ValidateError("Login Failed!");
+      const res = await restApi.postRequest("auth/login", {
+        email: status.email,
+        password: status.password,
+      });
+      if (!!res.token) {
+        dispatch({ type: "authToken", payload: res.token });
+        dispatch({ type: "updated", payload: !state.updated });
+        setStore(res.token);
+        showToast("You have successfully logged in.", "success");
+        navigate("/");
+      } else {
+        showToast(res.msg, "error");
       }
-      dispatch({ type: "authToken", payload: res.token });
-      dispatch({ type: "updated", payload: !state.updated });
-      setStore(res.token)
-      showToast("You have successfully logged in.", "success")
-      navigate("/")
     } catch (error) {
-      apiNotification(error)
+      apiNotification(error);
     }
 
-    dispatch({ type: 'loading', payload: false })
-  }
+    dispatch({ type: "loading", payload: false });
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (event: any) => {
+      if (event.key === "Enter") {
+        onSignin();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onSignin]);
 
   return (
-    <div className='Pg-white shadow-default dark:border-strokedark dark:bg-boxdark h-[100vh] flex justify-center items-center'>
+    <div className="Pg-white shadow-default dark:border-strokedark dark:bg-boxdark h-[100vh] flex justify-center items-center">
       <div className="rounded-lg border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark w-[100%] lg:w-[70%]">
         <div className="flex flex-wrap items-center">
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
-              <div className="mb-5.5 inline-block">
-              </div>
+              <div className="mb-5.5 inline-block"></div>
               <span className="inline-block">
                 <Icon icon="Login" />
               </span>
@@ -110,11 +134,17 @@ const SignIn = () => {
                     </span>
                     <input
                       value={status.email}
-                      onChange={e => onInput(e, "email", "isValidEmail")}
+                      onChange={(e) => onInput(e, "email", "isValidEmail")}
                       placeholder="Enter your email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-12 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
-                    {!status.isValidEmail.status ? <div className="text-red-500">{status.isValidEmail.msg}</div> : <></>}
+                    {!status.isValidEmail.status ? (
+                      <div className="text-red-500">
+                        {status.isValidEmail.msg}
+                      </div>
+                    ) : (
+                      <></>
+                    )}
                   </div>
                 </div>
                 <div className="mb-6">
@@ -125,16 +155,31 @@ const SignIn = () => {
                     <input
                       type={!status.isView ? "password" : "text"}
                       value={status.password}
-                      onChange={e => onInput(e, "password", "isStrongPassword")}
+                      onChange={(e) =>
+                        onInput(e, "password", "isStrongPassword")
+                      }
                       placeholder="Enter your Password!"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-12 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
-                    <span className="absolute left-4 top-4"><Icon icon="Password" /></span>
-                    <span onClick={() => setStatus({ ...status, isView: !status.isView })} className="absolute right-4 top-5">
+                    <span className="absolute left-4 top-4">
+                      <Icon icon="Password" />
+                    </span>
+                    <span
+                      onClick={() =>
+                        setStatus({ ...status, isView: !status.isView })
+                      }
+                      className="absolute right-4 top-5"
+                    >
                       <Icon icon={status.isView ? "View" : "EyeOff"} />
                     </span>
                   </div>
-                  {!status.isStrongPassword.status ? <div className="text-red-500">{status.isStrongPassword.msg}</div> : <></>}
+                  {!status.isStrongPassword.status ? (
+                    <div className="text-red-500">
+                      {status.isStrongPassword.msg}
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                 </div>
 
                 <div className="pt-5">
@@ -142,13 +187,14 @@ const SignIn = () => {
                     onClick={onSignin}
                     className="flex flex-row gap-4 justify-center items-center w-full cursor-pointer rounded-lg border border-blue-600 bg-blue-600 p-4 text-white transition hover:bg-opacity-90"
                   >
-                    {state.loading && <Loader />}<div>Sign in</div>
+                    {state.loading && <Loader />}
+                    <div>Sign in</div>
                   </button>
                 </div>
               </div>
               <div className="mt-6 text-center">
                 <p>
-                  Don't have account?{' '}
+                  Don't have account?{" "}
                   <Link to="/auth/signup" className="text-primary">
                     Sign up
                   </Link>

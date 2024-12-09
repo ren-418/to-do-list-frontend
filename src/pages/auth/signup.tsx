@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useGlobalContext } from '../../context';
 import { emailValidator, passwordMatch, showToast, strongPasswordValidator } from '../../context/helper';
-import Icon from '../../components/icon';
 import { restApi } from '../../context/http-request';
+
+import Icon from '../../components/icon';
 import Loader from '../../components/loader';
 import { apiNotification } from '../../services';
 
@@ -22,8 +23,8 @@ interface SignUpType {
         status: boolean
     },
     isStrongPassword: {
-        msg: string,
-        status: boolean
+            msg: string,
+            status: boolean
     },
     isMatch: {
         msg: string,
@@ -36,7 +37,6 @@ const SignUp: React.FC = () => {
     const [state, { dispatch }]: GlobalContextType = useGlobalContext()
 
     const [status, setStatus] = React.useState({
-  
         isValidName: {
             msg: "",
             status: false
@@ -90,7 +90,7 @@ const SignUp: React.FC = () => {
         if (status.password === "") {
             return setStatus({ ...status, isStrongPassword: { status: false, msg: "Password is required!" } })
         }
-        // if (status.isValidEmail.status && status.isMatch.status && status.isStrongPassword.status && status.isValidName.status) {
+        
         dispatch({ type: 'loading', payload: true })
         try {
             const res = await restApi.postRequest("auth/register", { username: status.username, email: status.email, password: status.password })
@@ -99,6 +99,8 @@ const SignUp: React.FC = () => {
                 navigate("/auth/signin")
                 dispatch({ type: 'loading', payload: false })
                 return
+            } else {
+                showToast(res.msg, "error")
             }
         } catch (error: any) {
             apiNotification(error)
@@ -107,6 +109,17 @@ const SignUp: React.FC = () => {
         
     }
 
+    useEffect(() => {
+        const handleKeyDown = (event: any) => {
+          if (event.key === "Enter") {
+            onSignUp();
+          }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+          window.removeEventListener("keydown", handleKeyDown);
+        };
+      }, [onSignUp]);
     return (
         <div className='bg-white shadow-default dark:border-strokedark dark:bg-boxdark h-[100vh] flex justify-center items-center'>
             <div className="rounded-lg border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark w-[100%] lg:w-[70%] h-[70%]">

@@ -1,7 +1,8 @@
 import flatpickr from 'flatpickr';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-const DatePicker = ({onChangeDate}: {onChangeDate: (date: Date) => void}) => {
+const DatePicker = ({ onChangeDate, initialDate }: { onChangeDate: (date: Date) => void, initialDate?: any}) => {
+  const inputRef = useRef<any>(null);
   useEffect(() => {
     // Init flatpickr
     flatpickr('.form-datepicker', {
@@ -17,12 +18,16 @@ const DatePicker = ({onChangeDate}: {onChangeDate: (date: Date) => void}) => {
         onChangeDate(selectedDates[0]);
       },
     });
+    if (initialDate) {
+      inputRef.current.value = initialDate.toISOString().split('T')[0];
+    }
   }, [onChangeDate]);
 
   return (
     <div>
       <div className="relative">
         <input
+        ref={inputRef} 
           className="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
           placeholder="mm/dd/yyyy"
           data-class="flatpickr-right"

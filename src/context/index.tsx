@@ -17,13 +17,13 @@ const INIT_STATE: InitStateObject = {
     }
 }
 
-// create context
+
 const GlobalContext = createContext<any>({});
 const reducer = (state: InitStateObject, { type, payload }: ReducerObject) => {
     return { ...state, [type]: payload };
 }
 
-// use contexts
+
 function useGlobalContext() {
     return useContext(GlobalContext);
 }

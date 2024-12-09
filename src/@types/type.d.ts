@@ -15,7 +15,7 @@ interface TaskItem {
     user_id:string;
     title:string,
     description:string,
-    status:boolean,
+    status:string,
     priority:string,
     due_date:number | null
 }

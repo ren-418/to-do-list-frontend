@@ -23,7 +23,7 @@ const restApi = {
             'Authorization':  authToken
           }
         })    
-        console.log("loginStatus :: result", result)
+
         return result.data
       },
 }
