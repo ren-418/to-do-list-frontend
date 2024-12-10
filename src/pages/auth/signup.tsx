@@ -58,7 +58,7 @@ const SignUp: React.FC = () => {
 
     const onInput = (e: any, k: string, v: string) => {
         const value = e.target.value
-
+        // validate input value
         const validation = () => {
             if (k === "username") {
                 if (!v) {
@@ -95,6 +95,7 @@ const SignUp: React.FC = () => {
         try {
             const res = await restApi.postRequest("auth/register", { username: status.username, email: status.email, password: status.password })
             if (!!res.user) {
+                // handler after register
                 showToast("Registration Successful! ", "success")
                 navigate("/auth/signin")
                 dispatch({ type: 'loading', payload: false })
@@ -110,6 +111,7 @@ const SignUp: React.FC = () => {
     }
 
     useEffect(() => {
+        // In case user press enter keyboard to sign in
         const handleKeyDown = (event: any) => {
           if (event.key === "Enter") {
             onSignUp();
@@ -131,7 +133,6 @@ const SignUp: React.FC = () => {
                             </span>
                         </div>
                     </div>
-
                     <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
                         <div className="w-full p-4 sm:p-12.5 xl:p-15">
                             <div className="mb-4">
@@ -195,7 +196,7 @@ const SignUp: React.FC = () => {
 
                             <div className="mb-6">
                                 <label className="mb-2.5 block font-medium text-black dark:text-white">
-                                    Conform Password
+                                    Confirm Password
                                 </label>
                                 <div className="relative">
                                     <input

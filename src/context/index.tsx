@@ -53,19 +53,20 @@ const setStore = async (authToken: string) => {
         console.log("authToken_setStore_error::", err.message);
     }
 }
+
 // setAuthToken to localstorage End
 
 const GlobalContextProvider = ({ children }: any) => {
     const [state, dispatch] = useReducer(reducer, INIT_STATE);
 
     useEffect(() => {
+        // init data
         initSessionSetting();
     }, [state.updated])
 
  const initSessionSetting = async () => {
         try {
             const authToken = await getStore();
-
             if (!!authToken) {
                 const loginStatus = await restApi.loginStatus(authToken);
                 if (!!loginStatus) {
@@ -74,6 +75,7 @@ const GlobalContextProvider = ({ children }: any) => {
                         username: loginStatus.username,
                         taskList:loginStatus.taskList
                     }
+                    // save basic data
                     dispatch({ type: "authToken", payload: authToken });
                     dispatch({ type: "userData", payload: userData });
                     setTimeout(() => { dispatch({ type: "showLoadingPage", payload: false }) }, 1000);

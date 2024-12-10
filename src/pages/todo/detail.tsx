@@ -51,6 +51,8 @@ const TaskDetail = () => {
   const { id } = useParams();
 
   const onSend = async () => {
+
+    // update if input values are valid
     if (status.isValidTitle.msg == "" && status.isValidDesc.msg == "") {
       dispatch({ type: "loading", payload: true });
       try {
@@ -77,6 +79,7 @@ const TaskDetail = () => {
 
   const onInput = (e: any, type: string, vaildkey: string) => {
     const value = e.target.value;
+    // validate input value
     const validVal = validateTask(type, value);
     setStatus({ ...status, [type]: value, [vaildkey]: validVal });
   };
@@ -134,8 +137,8 @@ const TaskDetail = () => {
 
   const fetchTaskDetail = async () => {
     try {
+      // get detail data of task by id
       const taskDetail = await restApi.postRequest("todo/read", { id: id });
-
       if (taskDetail) {
         const { title, description, priority, status, due_date } =
           taskDetail.foundItem;

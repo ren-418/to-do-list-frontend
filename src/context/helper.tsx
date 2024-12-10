@@ -1,5 +1,7 @@
 import { toast } from 'react-toastify';
 
+// essential helpers
+
 export const showToast = (html: string, type: 'info' | 'success' | 'warning' | 'error' | 'default') => {
     toast(html, {
         position: "top-right",

@@ -45,6 +45,7 @@ const NewTodo = () => {
   });
 
   const onSend = async () => {
+    // update if input values are valid
     if (status.isValidTitle.status && status.isValidDesc.status) {
       dispatch({ type: "loading", payload: true });
       const res = await restApi.postRequest("todo/create", status);

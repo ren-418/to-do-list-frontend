@@ -43,9 +43,11 @@ const SignIn = () => {
     isView: false,
     isLoading: false,
   } as LoginTypes);
+
   const onInput = (e: any, k: string, v: string) => {
     const value = e.target.value;
 
+    // validate input value 
     const validation = () => {
       if (k === "email") {
         return emailValidator(value);
@@ -58,6 +60,7 @@ const SignIn = () => {
   };
 
   const onSignin = async () => {
+
     if (status.email === "") {
       return setStatus({
         ...status,
@@ -76,7 +79,9 @@ const SignIn = () => {
         email: status.email,
         password: status.password,
       });
+
       if (!!res.token) {
+        // handler after login 
         dispatch({ type: "authToken", payload: res.token });
         dispatch({ type: "updated", payload: !state.updated });
         setStore(res.token);
@@ -93,6 +98,7 @@ const SignIn = () => {
   };
 
   useEffect(() => {
+    // In case user press enter keyboard to sign in
     const handleKeyDown = (event: any) => {
       if (event.key === "Enter") {
         onSignin();

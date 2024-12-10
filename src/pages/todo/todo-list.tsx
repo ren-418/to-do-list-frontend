@@ -3,8 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { useGlobalContext } from "../../context";
 import { restApi } from "../../context/http-request";
-import { showToast } from "../../context/helper";
-import { getCaseSensitive } from "../../context/helper";
+import { showToast,getCaseSensitive } from "../../context/helper";
 
 import Layout from "../../components/layout/layout";
 import Breadcrumb from "../../components/breadcrumb";
@@ -24,7 +23,6 @@ const TodoList = () => {
   });
 
   const navigate = useNavigate();
-
   useEffect(() => {
     setStatus({
       isLoading: false,
@@ -34,6 +32,7 @@ const TodoList = () => {
 
 
   const handleDelete = async (id: string) => {
+    // delete item by id
     const confirmDelete = window.confirm("Are you sure you want to delete this task?");
     if (confirmDelete) {
       const res = await restApi.postRequest("todo/delete", { id: id });
@@ -61,6 +60,7 @@ const TodoList = () => {
           </div>
           <div className="mt-2 pb-3 sm:mt-4 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
             <div className="flex items-center justify-end mb-4 p-5">
+              
               <Link
                 to="/create"
                 className="flex justify-center gap-3 items-center rounded-md px-5 py-3 text-center font-medium bg-green-700 text-white hover:bg-opacity-90"
