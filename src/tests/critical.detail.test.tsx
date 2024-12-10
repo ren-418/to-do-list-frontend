@@ -1,7 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TaskDetail from "../pages/todo/detail";
-import { useGlobalContext } from "../context";
 import { restApi } from "../context/http-request";
 import { expect } from 'vitest';
 
