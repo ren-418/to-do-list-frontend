@@ -19,7 +19,6 @@ const restApi = {
     },
 
     loginStatus: async (authToken: any) => {
-
         const result = await axios.post("user/getData", {}, {
           headers: {
             'Content-Type': 'application/json',
