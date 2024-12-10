@@ -72,6 +72,8 @@ const NewTodo = () => {
 
   const onInput = (e: any, type: string, vaildkey: string) => {
     const value = e.target.value;
+    
+    // validate input value
     const validVal = validateTask(type, value);
     setStatus({ ...status, [type]: value, [vaildkey]: validVal });
   };

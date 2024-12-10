@@ -58,6 +58,7 @@ const SignUp: React.FC = () => {
 
     const onInput = (e: any, k: string, v: string) => {
         const value = e.target.value
+        
         // validate input value
         const validation = () => {
             if (k === "username") {
